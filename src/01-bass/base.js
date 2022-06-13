@@ -1,10 +1,11 @@
-
 import React from "react";
-import {Layout, Menu, Row, Col, Button, Divider} from 'antd';
-import {UserOutlined, FileOutlined, EditOutlined,PoweroffOutlined} from '@ant-design/icons';
+import {Button, Col, Divider, Layout, Menu, Row} from 'antd';
+import {EditOutlined, FileOutlined, PoweroffOutlined, UserOutlined} from '@ant-design/icons';
+import {Outlet} from "react-router";
+import {getCookie} from './cookies'
+import request from "./request";
 
-
-const { Header, Content, Footer, Sider ,} = Layout;
+const {Header, Content, Footer, Sider,} = Layout;
 
 
 function getItem(label, key, icon, children) {
@@ -17,20 +18,23 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-    getItem('用户管理', '/user', <UserOutlined />),
-    getItem('车辆管理', '/card', <EditOutlined />),
-    getItem('订单管理', '/order', <FileOutlined />),
+    getItem('用户管理', '/user', <UserOutlined/>),
+    getItem('车辆管理', '/card', <EditOutlined/>),
+    getItem('订单管理', '/order', <FileOutlined/>),
 
 ];
 
-class App02 extends React.Component {
+class Base extends React.Component {
 
     onSelect = (item, key, keyPath, selectedKeys, domEvent) => {
         window.location = item['key'];
     }
 
     logout = () => {
+        request.get('/api/auth/logout')
         console.log('我退出啦')
+        //回到登录页面
+        window.location.pathname = '/login'
     }
 
     render() {
@@ -41,9 +45,9 @@ class App02 extends React.Component {
                     minHeight: '100vh',
                 }}
             >
-                <Sider collapsible   >
-                    <div className="logo" />
-                    <Menu theme="dark"  mode="inline" items={items} onSelect={this.onSelect} />
+                <Sider collapsible>
+                    <div className="logo"/>
+                    <Menu theme="dark" mode="inline" items={items} onSelect={this.onSelect}/>
                 </Sider>
 
                 <Layout className="site-layout">
@@ -57,20 +61,11 @@ class App02 extends React.Component {
                             <Col flex={36}>
                             </Col>
                             <Col flex={1}>
-                                <font color="FFFFFF" >用户名</font>
-                                <Divider type="vertical" style={{ borderLeft: '1px solid #FFFFFF' }}/>
-
-                                <font color="FFFFFF" onClick={ this.logout }>退出</font>
-                                {/*<font color="FFFFFF">密码</font>*/}
-                                <Button
-                                    type="text"
-
-                                    icon={<PoweroffOutlined />}
-
-                                    //onClick={() => enterLoading(2)}
-                                >
-                                    退出
-                                </Button>
+                                <font color="FFFFFF">{getCookie('name')}</font>
+                                <Divider type="vertical" style={{borderLeft: '1px solid #FFFFFF'}}/>
+                                <a onClick={this.logout}>
+                                    <font color="FFFFFF" >退出</font>
+                                </a>
                             </Col>
                         </Row>
                     </Header>
@@ -79,23 +74,8 @@ class App02 extends React.Component {
                             margin: '0 16px',
                         }}
                     >
-                        {/*<Breadcrumb
-                            style={{
-                                margin: '16px 0',
-                            }}
-                        >
-                            <Breadcrumb.Item>User</Breadcrumb.Item>
-                            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-                        </Breadcrumb>*/}
-                        <div
-                            className="site-layout-background"
-                            style={{
-                                padding: 24,
-                                minHeight: 360,
-                            }}
-                        >
-                            Bill is a cat.
-                        </div>
+
+                        <Outlet/>
                     </Content>
                     <Footer
                         style={{
@@ -110,4 +90,4 @@ class App02 extends React.Component {
     }
 }
 
-export default App02;
+export default Base;
